@@ -1,0 +1,101 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Produto {
+    private String nome;
+    private double preco;
+
+    public Produto(String nome, double preco) {
+        this.nome = nome;
+        this.preco = preco;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public String etiquetaPreco() {
+        return nome + " - R$" + String.format("%.2f", preco);
+    }
+}
+
+class ProdutoImportado extends Produto {
+    private static final double TAXA_IMPORTACAO = 0.60;
+
+    public ProdutoImportado(String nome, double preco) {
+        super(nome, preco);
+    }
+
+    public String etiquetaPreco() {
+        double precoFinal = getPreco() * (1 + TAXA_IMPORTACAO);
+        return getNome() + " (Importado) - R$" + String.format("%.2f", precoFinal);
+    }
+}
+
+class ProdutoUsado extends Produto {
+    private String dataFabricacao;
+
+    public ProdutoUsado(String nome, double preco, String dataFabricacao) {
+        super(nome, preco);
+        this.dataFabricacao = dataFabricacao;
+    }
+
+    public String etiquetaPreco() {
+        return getNome() + " (Usado) - R$" + String.format("%.2f", getPreco()) + " (Fabricado em " + dataFabricacao + ")";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Quantos produtos deseja cadastrar? ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        List<Produto> produtos = new ArrayList<>();
+
+        for (int i = 1; i <= n; i++) {
+            System.out.println("\nDados do Produto " + i + ":");
+            System.out.print("Esse produto é Comum, Importado ou Usado? (digite apenas a inical): ");
+            char tipo = sc.nextLine().charAt(0);
+
+            System.out.print("Nome do produto: ");
+            String nome = sc.nextLine();
+
+            System.out.print("Preço do produto: ");
+            double preco = sc.nextDouble();
+            sc.nextLine();
+
+            switch (tipo) {
+                case 'c':
+                    produtos.add(new Produto(nome, preco));
+                    break;
+                case 'i':
+                    produtos.add(new ProdutoImportado(nome, preco));
+                    break;
+                case 'u':
+                    System.out.print("Data de Fabricação: ");
+                    String dataFabricacao = sc.nextLine();
+                    produtos.add(new ProdutoUsado(nome, preco, dataFabricacao));
+                    break;
+                default:
+                    System.out.println("Tipo de produto inválido. Tente novamente.");
+                    i--;
+                    break;
+            }
+        }
+
+        System.out.println("\nEtiquetas de Preço:");
+        for (Produto produto : produtos) {
+            System.out.println(produto.etiquetaPreco());
+        }
+
+        sc.close();
+    }
+}
