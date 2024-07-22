@@ -1,0 +1,97 @@
+//classe carro 
+public class Carro {
+    private String modelo;
+    public Carro(String modelo) {
+        this.modelo = modelo;
+    }
+    public String getModelo() {
+        return modelo;
+    }
+}
+
+//classe Locacao
+public class Locacao {
+    private Carro carro;
+    private double valorPorHora;
+    private double valorDiaria;
+    private double valorImposto;
+    private int horas;
+    public Locacao(Carro carro, double valorPorHora, double valorDiaria) {
+        this.carro = carro;
+        this.valorPorHora = valorPorHora;
+        this.valorDiaria = valorDiaria;
+        this.valorImposto = 0.0;
+        this.horas = 0;
+    }
+    public void calcularValor(int horas) {
+        this.horas = horas;
+
+        if (horas <= 12) {
+            double valorTotal = valorPorHora * horas;
+            calcularImposto(valorTotal);
+        } else {
+            double valorTotal = valorDiaria;
+            calcularImposto(valorTotal);
+        }
+    }
+    private void calcularImposto(double valorTotal) {
+        if (valorTotal <= 100.0) {
+            this.valorImposto = valorTotal * 0.2;
+        } else {
+            this.valorImposto = valorTotal * 0.15;
+        }
+    }
+    public double getValorTotal() {
+        double valorTotal;
+
+        if (horas <= 12) {
+            valorTotal = valorPorHora * horas;
+        } else {
+            valorTotal = valorDiaria;
+        }
+        return valorTotal + valorImposto;
+    }
+    public double getValorImposto() {
+        return valorImposto;
+    }
+    public Carro getCarro() {
+        return carro;
+    }
+    public int getHoras() {
+        return horas;
+    }
+}
+
+//main
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Informe o modelo do carro:");
+        String modelo = scanner.nextLine();
+
+        System.out.println("Informe o valor por hora da locação:");
+        double valorPorHora = scanner.nextDouble();
+
+        System.out.println("Informe o valor da diária da locação:");
+        double valorDiaria = scanner.nextDouble();
+
+        System.out.println("Informe a quantidade de horas da locação:");
+        int horas = scanner.nextInt();
+
+        Carro carro = new Carro(modelo);
+
+        Locacao locacao = new Locacao(carro, valorPorHora, valorDiaria);
+        locacao.calcularValor(horas);
+
+        System.out.println("\n--- Nota de Pagamento ---");
+        System.out.println("Modelo do carro: " + locacao.getCarro().getModelo());
+        System.out.println("Horas de locação: " + locacao.getHoras());
+        System.out.println("Valor da locação: R$ " + String.format("%.2f", locacao.getValorTotal()));
+        System.out.println("Valor do imposto: R$ " + String.format("%.2f", locacao.getValorImposto()));
+        System.out.println("Valor total a pagar: R$ " + String.format("%.2f", (locacao.getValorTotal() + locacao.getValorImposto())));
+    }
+}
+ //prof, nao sei se coloquei bem a relação dos impostos 
