@@ -1,0 +1,89 @@
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+
+class Contrato {
+    private int numero;
+    private Date data;
+    private double valorTotal;
+
+    public Contrato(int numero, Date data, double valorTotal) {
+        this.numero = numero;
+        this.data = data;
+        this.valorTotal = valorTotal;
+    }
+
+    public List<Parcela> gerarParcelas(int meses) {
+        List<Parcela> parcelas = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(data);
+
+        double jurosMensal = 0.01;
+        double taxaDePagamento = 0.02;
+
+        for (int i = 1; i <= meses; i++) {
+            cal.add(Calendar.MONTH, 1);
+            Date dataVencimento = cal.getTime();
+            double valorBase = valorTotal / meses;
+            double valorParcela = valorBase * (1 + jurosMensal * i);
+            valorParcela += valorParcela * taxaDePagamento;
+            parcelas.add(new Parcela(dataVencimento, valorParcela));
+        }
+
+        return parcelas;
+    }
+}
+
+class Parcela {
+    private Date dataVencimento;
+    private double valor;
+
+    public Parcela(Date dataVencimento, double valor) {
+        this.dataVencimento = dataVencimento;
+        this.valor = valor;
+    }
+
+    public Date getDataVencimento() {
+        return dataVencimento;
+    }
+
+    public double getValor() {
+        return valor;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        System.out.println("Informe os dados do contrato:");
+        System.out.print("Número do contrato: ");
+        int numero = sc.nextInt();
+        System.out.print("Data do contrato (dd/MM/yyyy): ");
+        Date data = null;
+        try {
+            data = sdf.parse(sc.next());
+        } catch (Exception e) {
+            System.out.println("Formato de data inválido. Por favor, informe a data no formato dd/MM/yyyy.");
+            System.exit(0);
+        }
+        System.out.print("Valor total do contrato: ");
+        double valorTotal = sc.nextDouble();
+        System.out.print("Informe o número de parcelas: ");
+        int meses = sc.nextInt();
+
+        Contrato contrato = new Contrato(numero, data, valorTotal);
+        List<Parcela> parcelas = contrato.gerarParcelas(meses);
+
+        System.out.println("\nParcelas geradas:");
+        for (Parcela parcela : parcelas) {
+            System.out.println(sdf.format(parcela.getDataVencimento()) + " - " + String.format("%.2f", parcela.getValor()));
+        }
+
+        sc.close();
+    }
+}
