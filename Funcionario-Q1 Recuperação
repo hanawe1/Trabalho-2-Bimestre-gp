@@ -1,0 +1,94 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+
+class Funcionario {
+    protected String nome;
+    protected int horasTrabalhadas;
+    protected double valorHora;
+
+    public Funcionario(String nome, int horasTrabalhadas, double valorHora) {
+        this.nome = nome;
+        this.horasTrabalhadas = horasTrabalhadas;
+        this.valorHora = valorHora;
+    }
+
+
+    public double calcularPagamento() {
+        return horasTrabalhadas * valorHora;
+    }
+
+
+    public String getNome() {
+        return nome;
+    }
+}
+
+class FuncionarioTerceirizado extends Funcionario {
+    private double despesaAdicional;
+
+    public FuncionarioTerceirizado(String nome, int horasTrabalhadas, double valorHora, double despesaAdicional) {
+        super(nome, horasTrabalhadas, valorHora);
+        this.despesaAdicional = despesaAdicional;
+    }
+
+    @Override
+    public double calcularPagamento() {
+        return super.calcularPagamento() + (despesaAdicional * 1.1);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+
+        List<Funcionario> funcionarios = new ArrayList<>();
+
+        System.out.print("Número de funcionários: ");
+        int n = scanner.nextInt();
+        scanner.nextLine();
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nDados do funcionário #" + (i + 1));
+
+            System.out.print("Digite P para próprio e T para terceirizado): ");
+            char tipo = scanner.nextLine().charAt(0);
+
+            System.out.print("Nome: ");
+            String nome = scanner.nextLine();
+
+            System.out.print("Horas trabalhadas: ");
+            int horas = scanner.nextInt();
+
+            System.out.print("Custos por hora: ");
+            double valorHora = scanner.nextDouble();
+
+            if (tipo == 'P') {
+
+                Funcionario proprio = new Funcionario(nome, horas, valorHora);
+                funcionarios.add(proprio);
+            } else if (tipo == 'T') {
+
+                System.out.print("Custo extra: ");
+                double despesaAdicional = scanner.nextDouble();
+
+                FuncionarioTerceirizado terceirizado = new FuncionarioTerceirizado(nome, horas, valorHora, despesaAdicional);
+                funcionarios.add(terceirizado);
+            } else {
+                System.out.println("Tipo inválido. Digite P ou T.");
+                i--;
+            }
+
+            scanner.nextLine();
+        }
+
+        System.out.println("\nPagamentos:");
+        for (Funcionario func : funcionarios) {
+            System.out.println("Nome: " + func.getNome() + " - Pagamento: R$ " + func.calcularPagamento());
+        }
+
+        scanner.close();
+    }
+}
